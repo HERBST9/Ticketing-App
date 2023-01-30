@@ -1,35 +1,25 @@
-import express from 'express'
-import {json} from 'body-parser'
-import 'express-async-errors'
- 
+import mongoose from 'mongoose'
+import { app } from './app'
 
 
-import { currentUserRouter } from './routes/current-user'
-import { signoutRouter } from './routes/signout'
-import { signinRouter } from './routes/signin'
-import { signupRouter } from './routes/signup'
-import { errorHandler } from './middlewares/error-handler'
-import { NotFound } from './errors/not-found'
+const start = async () => {
+    if(!process.env.JWT_KEY) {
+        throw new Error ('JWT_KEY must be defined')
+    }
+    try {
+        await mongoose.connect('mongodb://auth-mongo-srv:27017/auth')
+        console.log('Connected to MongoDB')
 
+    } catch(e) {
+        console.log(e)
 
-const app = express()
-
-
-app.use(json())
-
-app.use(currentUserRouter)
-app.use(signinRouter)
-app.use(signoutRouter)
-app.use(signupRouter)
-
-app.get('*', async () => {
-    throw new NotFound()
-})
-app.use(errorHandler)
-
+    }
+}
 
 
 
 app.listen(3000, () => {
     console.log('3000....!...... !!!!!!')
 })
+
+start()
